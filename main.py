@@ -21,9 +21,9 @@ def download():
         yt_object = pytube.YouTube(url)
         video = yt_object.streams.get_highest_resolution()
         video.download()
-        print("Download complete.")
+        message_label.configure(text="Download complete!", text_color="green")
     except Exception as e:
-        print(f"{e}")
+        message_label.configure(text=f"{e}", text_color="red")
 
 
 # Set the appearance mode and default color theme.
@@ -52,6 +52,15 @@ url_entry.pack(padx=20, pady=0)
 # Add download button.
 download_button = customtkinter.CTkButton(app, text="DOWNLOAD", cursor="hand2", command=download)
 download_button.pack(padx=0, pady=20)
+
+# Add message frame for displaying status messages.
+message_frame = customtkinter.CTkFrame(app, width=600, height=35)
+message_frame.pack_propagate(False)
+message_frame.pack(fill="x", padx=20, pady=(0, 20))
+
+# Add message label inside the message frame.
+message_label = customtkinter.CTkLabel(message_frame, text="")
+message_label.pack(expand=True, fill="both")
 
 # Start the application's main loop.
 app.mainloop()
