@@ -43,8 +43,17 @@ def on_progress(stream, chunk, bytes_remaining):
 
     percentage_label.configure(text=f"{percentage}%")
     percentage_label.update()
-    
+
     progress_bar.set(float(percentage_of_completion) / 100)
+
+
+def reset_progress(event=None):
+    """
+    Resets the progress bar and percentage label to 0.
+    """
+    progress_bar.set(0)
+    percentage_label.configure(text="0%")
+    message_label.configure(text="")
 
 
 # Set the appearance mode and default color theme.
@@ -68,6 +77,7 @@ instructions.pack()
 
 # Add URL entry field.
 url_entry = customtkinter.CTkEntry(app, width=600, height=35)
+url_entry.bind("<KeyRelease>", reset_progress)
 url_entry.pack(padx=20, pady=0)
 
 # Add download button.
