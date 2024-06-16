@@ -5,6 +5,7 @@ A simple YouTube video downloader.
 """
 
 import customtkinter
+import PIL
 import pytube
 
 
@@ -32,10 +33,17 @@ customtkinter.set_default_color_theme("dark-blue")
 # Create the main application window.
 app = customtkinter.CTk()
 app.resizable(False, False)
+app.iconbitmap("./yt_downloader_icon.ico")
+app.title("YT Downloader")
+
+# Add the logo to the application window.
+logo = customtkinter.CTkImage(dark_image=PIL.Image.open("yt_downloader_logo.png"), size=(250, 25))
+logo_label = customtkinter.CTkLabel(app, image=logo, text="")
+logo_label.pack(padx=0, pady=20)
 
 # Add instructions label.
 instructions = customtkinter.CTkLabel(app, text="Paste the YouTube video link you want to download in the field below.")
-instructions.pack(padx=0, pady=(20, 0))
+instructions.pack()
 
 # Add URL entry field.
 url_entry = customtkinter.CTkEntry(app, width=600, height=35)
