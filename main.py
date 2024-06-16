@@ -9,6 +9,18 @@ import PIL
 import pytube
 
 
+def change_mode():
+    """
+    Changes the appearance mode based on the switch state.
+    """
+    if mode_switch.get() == 1:
+        customtkinter.set_appearance_mode("dark")
+        mode_switch.configure(text="Light mode")
+    else:
+        customtkinter.set_appearance_mode("light")
+        mode_switch.configure(text="Dark mode")
+
+
 def download():
     """
     Downloads the highest resolution video from a YouTube URL.
@@ -57,8 +69,8 @@ def reset_progress(event=None):
 
 
 # Set the appearance mode and default color theme.
-customtkinter.set_appearance_mode("dark")
-customtkinter.set_default_color_theme("dark-blue")
+customtkinter.set_appearance_mode("light")
+customtkinter.set_default_color_theme("blue")
 
 # Create the main application window.
 app = customtkinter.CTk()
@@ -67,7 +79,7 @@ app.iconbitmap("./yt_downloader_icon.ico")
 app.title("YT Downloader")
 
 # Add the logo to the application window.
-logo = customtkinter.CTkImage(dark_image=PIL.Image.open("yt_downloader_logo.png"), size=(250, 25))
+logo = customtkinter.CTkImage(light_image=PIL.Image.open("yt_downloader_logo_light.png"), dark_image=PIL.Image.open("yt_downloader_logo_dark.png"), size=(250, 25))
 logo_label = customtkinter.CTkLabel(app, image=logo, text="")
 logo_label.pack(padx=0, pady=20)
 
@@ -101,6 +113,10 @@ message_frame.pack(fill="x", padx=20, pady=(0, 20))
 # Add message label inside the message frame.
 message_label = customtkinter.CTkLabel(message_frame, text="")
 message_label.pack(expand=True, fill="both")
+
+# Add mode switch for toggling between light and dark mode.
+mode_switch = customtkinter.CTkSwitch(app, text="Dark mode", command=change_mode)
+mode_switch.pack(padx=0, pady=(0, 20))
 
 # Start the application's main loop.
 app.mainloop()
