@@ -133,7 +133,7 @@ message_label.pack(expand=True, fill="both")
 
 # Add mode switch for toggling between light and dark mode.
 mode_switch = customtkinter.CTkSwitch(app, text="Dark mode", command=change_mode)
-mode_switch.pack(padx=0, pady=(0, 20))
+mode_switch.pack(side="left", padx=20, pady=(0, 20))
 
 # Start the application's main loop.
 app.mainloop()
