@@ -26,16 +26,33 @@ def download():
     Downloads the highest resolution video from a YouTube URL.
 
     Raises:
-        Exception: if there is an error during the download process.
+        ValueError: if the URL field is empty.
+        pytube.exceptions.RegexMatchError: if the URL format is invalid.
+        pytube.exceptions.VideoUnavailable: if the video is not available.
+        pytube.exceptions.PytubeError: if a general Pytube error occurs.
+        Exception: for any other unexpected errors.
     """
     try:
         video_url = url_entry.get()
+        if not video_url.strip():
+            raise ValueError("The URL field is empty, please enter a valid YouTube video URL.")
+
         yt_object = pytube.YouTube(video_url, on_progress_callback=on_progress)
         video = yt_object.streams.get_highest_resolution()
+
         video.download()
         message_label.configure(text="Download complete!", text_color="green")
+
+    except pytube.exceptions.RegexMatchError:
+        message_label.configure(text="Invalid URL, please enter a valid YouTube video URL.", text_color="red")
+    except pytube.exceptions.VideoUnavailable:
+        message_label.configure(text="Video not available, may be private or deleted.", text_color="red")
+    except pytube.exceptions.PytubeError as e:
+        message_label.configure(text=f"An error occurred: {e}", text_color="red")
+    except ValueError as e:
+        message_label.configure(text=str(e), text_color="red")
     except Exception as e:
-        message_label.configure(text=f"{e}", text_color="red")
+        message_label.configure(text="An unexpected error occurred, please try again later.", text_color="red")
 
 
 def on_progress(stream, chunk, bytes_remaining):
