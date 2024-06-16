@@ -7,6 +7,7 @@ A simple YouTube video downloader.
 import customtkinter
 import PIL
 import pytube
+import tkinter
 
 
 def change_mode():
@@ -19,6 +20,14 @@ def change_mode():
     else:
         customtkinter.set_appearance_mode("light")
         mode_switch.configure(text="Dark mode")
+
+
+def browse_folder():
+    """
+    Opens a dialog to select a directory and sets the path to folder_var.
+    """
+    folder_selected = tkinter.filedialog.askdirectory()
+    folder_var.set(folder_selected)
 
 
 def download():
@@ -37,10 +46,12 @@ def download():
         if not video_url.strip():
             raise ValueError("The URL field is empty, please enter a valid YouTube video URL.")
 
+        download_folder = folder_var.get()
+
         yt_object = pytube.YouTube(video_url, on_progress_callback=on_progress)
         video = yt_object.streams.get_highest_resolution()
 
-        video.download()
+        video.download(output_path=download_folder)
         message_label.configure(text="Download complete!", text_color="green")
 
     except pytube.exceptions.RegexMatchError:
@@ -110,7 +121,7 @@ url_entry.bind("<KeyRelease>", reset_progress)
 url_entry.pack(padx=20, pady=0)
 
 # Add download button.
-download_button = customtkinter.CTkButton(app, text="DOWNLOAD", cursor="hand2", command=download)
+download_button = customtkinter.CTkButton(app, width=200, text="DOWNLOAD", cursor="hand2", command=download)
 download_button.pack(padx=0, pady=20)
 
 # Add progress bar.
@@ -131,9 +142,18 @@ message_frame.pack(fill="x", padx=20, pady=(0, 20))
 message_label = customtkinter.CTkLabel(message_frame, text="")
 message_label.pack(expand=True, fill="both")
 
+# Add a frame at the bottom of the application window.
+bottom_frame = customtkinter.CTkFrame(app, fg_color=app.cget("fg_color"))
+bottom_frame.pack(fill="x", padx=20, pady=(0, 20))
+
 # Add mode switch for toggling between light and dark mode.
-mode_switch = customtkinter.CTkSwitch(app, text="Dark mode", command=change_mode)
-mode_switch.pack(side="left", padx=20, pady=(0, 20))
+mode_switch = customtkinter.CTkSwitch(bottom_frame, text="Dark mode", command=change_mode)
+mode_switch.pack(side="left")
+
+# Add button to select destination folder.
+folder_var = tkinter.StringVar()
+folder_button = customtkinter.CTkButton(bottom_frame, width=200, text="DESTINATION  FOLDER", command=browse_folder)
+folder_button.pack(side="right")
 
 # Start the application's main loop.
 app.mainloop()
