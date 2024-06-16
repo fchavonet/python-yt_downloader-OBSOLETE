@@ -5,6 +5,25 @@ A simple YouTube video downloader.
 """
 
 import customtkinter
+import pytube
+
+
+def download():
+    """
+    Downloads the highest resolution video from a YouTube URL.
+
+    Raises:
+        Exception: if there is an error during the download process.
+    """
+    try:
+        url = url_entry.get()
+        yt_object = pytube.YouTube(url)
+        video = yt_object.streams.get_highest_resolution()
+        video.download()
+        print("Download complete.")
+    except Exception as e:
+        print(f"{e}")
+
 
 # Set the appearance mode and default color theme.
 customtkinter.set_appearance_mode("dark")
@@ -23,7 +42,7 @@ url_entry = customtkinter.CTkEntry(app, width=600, height=35)
 url_entry.pack(padx=20, pady=0)
 
 # Add download button.
-download_button = customtkinter.CTkButton(app, text="DOWNLOAD", cursor="hand2")
+download_button = customtkinter.CTkButton(app, text="DOWNLOAD", cursor="hand2", command=download)
 download_button.pack(padx=0, pady=20)
 
 # Start the application's main loop.
