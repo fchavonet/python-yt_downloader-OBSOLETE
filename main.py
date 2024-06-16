@@ -17,13 +17,34 @@ def download():
         Exception: if there is an error during the download process.
     """
     try:
-        url = url_entry.get()
-        yt_object = pytube.YouTube(url)
+        video_url = url_entry.get()
+        yt_object = pytube.YouTube(video_url, on_progress_callback=on_progress)
         video = yt_object.streams.get_highest_resolution()
         video.download()
         message_label.configure(text="Download complete!", text_color="green")
     except Exception as e:
         message_label.configure(text=f"{e}", text_color="red")
+
+
+def on_progress(stream, chunk, bytes_remaining):
+    """
+    Updates the progress bar and percentage label during the download process.
+
+    Args:
+        stream: the stream object being downloaded.
+        chunk: the data chunk downloaded.
+        bytes_remaining: the number of bytes remaining to be downloaded.
+    """
+    total_size = stream.filesize
+    bytes_downloaded = total_size - bytes_remaining
+
+    percentage_of_completion = bytes_downloaded / total_size * 100
+    percentage = str(int(percentage_of_completion))
+
+    percentage_label.configure(text=f"{percentage}%")
+    percentage_label.update()
+    
+    progress_bar.set(float(percentage_of_completion) / 100)
 
 
 # Set the appearance mode and default color theme.
@@ -52,6 +73,15 @@ url_entry.pack(padx=20, pady=0)
 # Add download button.
 download_button = customtkinter.CTkButton(app, text="DOWNLOAD", cursor="hand2", command=download)
 download_button.pack(padx=0, pady=20)
+
+# Add progress bar.
+progress_bar = customtkinter.CTkProgressBar(app, width=600)
+progress_bar.set(0)
+progress_bar.pack()
+
+# Add percentage label.
+percentage_label = customtkinter.CTkLabel(app, text="0%")
+percentage_label.pack()
 
 # Add message frame for displaying status messages.
 message_frame = customtkinter.CTkFrame(app, width=600, height=35)
