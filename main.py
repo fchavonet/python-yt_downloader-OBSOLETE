@@ -6,8 +6,17 @@ A simple YouTube video downloader.
 
 import customtkinter
 import PIL
+import platform
 import pytube
+import ssl
 import tkinter
+
+# Check if the current system is macOS and modify SSL context if true.
+if platform.system() == "Darwin":
+    ssl._create_default_https_context = ssl._create_unverified_context
+    print("Running on macOS: SSL verification is disable.")
+else:
+    print("Running on Linux or Windows: SSL verification is enable.")
 
 
 def change_mode():
