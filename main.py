@@ -73,7 +73,7 @@ def download():
         message_label.configure(text=str(e), text_color="red")
     except Exception as e:
         message_label.configure(text="An unexpected error occurred, please try again later.", text_color="red")
-
+        print(e)
 
 def on_progress(stream, chunk, bytes_remaining):
     """
