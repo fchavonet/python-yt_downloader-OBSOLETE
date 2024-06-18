@@ -4,7 +4,6 @@
 A simple YouTube video downloader.
 """
 
-#
 import customtkinter
 import os
 import PIL
@@ -21,43 +20,22 @@ else:
     print("Running on Linux or Windows: SSL verification is enabled.")
 
 
-def change_mode():
+def on_format_change(choice):
     """
-    Changes the appearance mode based on the switch state.
+    Enables or disables the quality menu based on the selected file format.
+
+    Args:
+        choice: the selected file format (MP3 or MP4).
     """
-    if mode_switch.get() == 1:
-        customtkinter.set_appearance_mode("dark")
-        mode_switch.configure(text="Light mode")
+    if choice == "MP3":
+        quality_menu.configure(state="disabled")
     else:
-        customtkinter.set_appearance_mode("light")
-        mode_switch.configure(text="Dark mode")
-
-
-def get_default_download_path():
-    """
-    Returns the default download path based on the operating system.
-    """
-    if platform.system() == "Windows":
-        return os.path.join(os.environ["USERPROFILE"], "Downloads")
-    elif platform.system() == "Darwin":
-        return os.path.join(os.path.expanduser("~"), "Downloads")
-    else:
-        print("ERROR")
-
-
-def browse_folder():
-    """
-    Opens a dialog to select a folder and updates the folder_var with the selected path.
-    """
-    folder_selected = tkinter.filedialog.askdirectory()
-    if folder_selected:
-        folder_var.set(folder_selected)
-    message_label.configure(text=folder_var.get(), text_color=default_text_color)
+        quality_menu.configure(state="normal")
 
 
 def download():
     """
-    Downloads the highest resolution video from a YouTube URL.
+    Initiates the download process for the YouTube video or audio based on user inputs.
 
     Raises:
         ValueError: if the URL field is empty.
@@ -72,11 +50,39 @@ def download():
             raise ValueError("The URL field is empty, please enter a valid YouTube video URL.")
 
         download_folder = folder_var.get()
+        file_format = file_format_menu.get()
+        quality = quality_menu.get()
 
+        reset_progress()
         yt_object = pytube.YouTube(video_url, on_progress_callback=on_progress)
-        video = yt_object.streams.get_highest_resolution()
 
-        video.download(output_path=download_folder)
+        # Download video in MP4 format.
+        if file_format == "MP4":
+            if quality == "Highest":
+                video = yt_object.streams.get_highest_resolution()
+            else:
+                video = yt_object.streams.filter(res=quality, file_extension="mp4").first()
+
+            if not video:
+                raise pytube.exceptions.PytubeError("The requested quality is not available.")
+
+            video.download(output_path=download_folder, filename_prefix=f"Video - ")
+
+        # Download audio in MP3 format.
+        elif file_format == "MP3":
+            audio = yt_object.streams.filter(only_audio=True).first()
+            audio_file = audio.download(output_path=download_folder, filename_prefix=f"Audio - ")
+
+            # Convert to .mp3 extension
+            base, ext = os.path.splitext(audio_file)
+            new_file = base + ".mp3"
+
+            # Overwrite the existing file if it exists
+            if os.path.exists(new_file):
+                os.remove(new_file)
+
+            os.rename(audio_file, new_file)
+
         message_label.configure(text="Download complete!", text_color="green")
 
     except pytube.exceptions.RegexMatchError:
@@ -84,7 +90,7 @@ def download():
     except pytube.exceptions.VideoUnavailable:
         message_label.configure(text="Video not available, may be private or deleted.", text_color="red")
     except pytube.exceptions.PytubeError as e:
-        message_label.configure(text=f"An error occurred: {e}", text_color="red")
+        message_label.configure(text=str(e), text_color="red")
     except ValueError as e:
         message_label.configure(text=str(e), text_color="red")
     except Exception as e:
@@ -122,6 +128,40 @@ def reset_progress(event=None):
     message_label.configure(text=folder_var.get(), text_color=default_text_color)
 
 
+def change_mode():
+    """
+    Changes the appearance mode based on the switch state.
+    """
+    if mode_switch.get() == 1:
+        customtkinter.set_appearance_mode("dark")
+        mode_switch.configure(text="Light mode")
+    else:
+        customtkinter.set_appearance_mode("light")
+        mode_switch.configure(text="Dark mode")
+
+
+def get_default_download_path():
+    """
+    Returns the default download path based on the operating system.
+    """
+    if platform.system() == "Windows":
+        return os.path.join(os.environ["USERPROFILE"], "Downloads")
+    elif platform.system() == "Darwin":
+        return os.path.join(os.path.expanduser("~"), "Downloads")
+    else:
+        print("ERROR")
+
+
+def browse_folder():
+    """
+    Opens a dialog to select a folder and updates the folder_var with the selected path.
+    """
+    folder_selected = tkinter.filedialog.askdirectory()
+    if folder_selected:
+        folder_var.set(folder_selected)
+    message_label.configure(text=folder_var.get(), text_color=default_text_color)
+
+
 # Set the appearance mode and default color theme.
 customtkinter.set_appearance_mode("light")
 customtkinter.set_default_color_theme("blue")
@@ -146,9 +186,27 @@ url_entry = customtkinter.CTkEntry(app, width=600, height=35)
 url_entry.bind("<KeyRelease>", reset_progress)
 url_entry.pack(padx=20, pady=0)
 
-# Add download button.
-download_button = customtkinter.CTkButton(app, width=200, text="DOWNLOAD", cursor="hand2", command=download)
-download_button.pack(padx=0, pady=20)
+# Add a frame at the middle of the application window.
+middle_frame = customtkinter.CTkFrame(app, fg_color=app.cget("fg_color"))
+middle_frame.pack(fill="x", padx=20, pady=20)
+
+middle_frame.grid_columnconfigure(0, weight=0)
+middle_frame.grid_columnconfigure(1, weight=0)
+middle_frame.grid_columnconfigure(2, weight=1)
+
+# Add file format menu to the middle frame.
+file_format_menu = customtkinter.CTkOptionMenu(middle_frame, width=150, values=["MP3", "MP4"], command=on_format_change)
+file_format_menu.set("MP4")
+file_format_menu.grid(row=0, column=0, sticky="nsew", padx=(0, 20))
+
+# Add quality menu to the middle frame.
+quality_menu = customtkinter.CTkOptionMenu(middle_frame, width=150, values=["Highest", "1080p", "720p", "480p", "360p", "240p", "144p"])
+quality_menu.set("Highest")
+quality_menu.grid(row=0, column=1, sticky="nsew")
+
+# Add download button inside the middle frame.
+download_button = customtkinter.CTkButton(middle_frame, width=200, text="DOWNLOAD", cursor="hand2", command=download)
+download_button.grid(row=0, column=2, sticky="e")
 
 # Add progress bar.
 progress_bar = customtkinter.CTkProgressBar(app, width=600)
@@ -181,7 +239,6 @@ mode_switch.pack(side="left")
 folder_var = tkinter.StringVar()
 folder_button = customtkinter.CTkButton(bottom_frame, width=200, text="DESTINATION  FOLDER", command=browse_folder)
 folder_button.pack(side="right")
-
 
 # Set default download folder path and display it in the message label.
 folder_var.set(get_default_download_path())
