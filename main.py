@@ -4,7 +4,9 @@
 A simple YouTube video downloader.
 """
 
+#
 import customtkinter
+import os
 import PIL
 import platform
 import pytube
@@ -14,9 +16,9 @@ import tkinter
 # Check if the current system is macOS and modify SSL context if true.
 if platform.system() == "Darwin":
     ssl._create_default_https_context = ssl._create_unverified_context
-    print("Running on macOS: SSL verification is disable.")
+    print("Running on macOS: SSL verification is disabled.")
 else:
-    print("Running on Linux or Windows: SSL verification is enable.")
+    print("Running on Linux or Windows: SSL verification is enabled.")
 
 
 def change_mode():
@@ -31,12 +33,26 @@ def change_mode():
         mode_switch.configure(text="Dark mode")
 
 
+def get_default_download_path():
+    """
+    Returns the default download path based on the operating system.
+    """
+    if platform.system() == "Windows":
+        return os.path.join(os.environ["USERPROFILE"], "Downloads")
+    elif platform.system() == "Darwin":
+        return os.path.join(os.path.expanduser("~"), "Downloads")
+    else:
+        print("ERROR")
+
+
 def browse_folder():
     """
-    Opens a dialog to select a directory and sets the path to folder_var.
+    Opens a dialog to select a folder and updates the folder_var with the selected path.
     """
     folder_selected = tkinter.filedialog.askdirectory()
-    folder_var.set(folder_selected)
+    if folder_selected:
+        folder_var.set(folder_selected)
+    message_label.configure(text=folder_var.get(), text_color=default_text_color)
 
 
 def download():
@@ -75,6 +91,7 @@ def download():
         message_label.configure(text="An unexpected error occurred, please try again later.", text_color="red")
         print(e)
 
+
 def on_progress(stream, chunk, bytes_remaining):
     """
     Updates the progress bar and percentage label during the download process.
@@ -102,7 +119,7 @@ def reset_progress(event=None):
     """
     progress_bar.set(0)
     percentage_label.configure(text="0%")
-    message_label.configure(text="")
+    message_label.configure(text=folder_var.get(), text_color=default_text_color)
 
 
 # Set the appearance mode and default color theme.
@@ -149,6 +166,7 @@ message_frame.pack(fill="x", padx=20, pady=(0, 20))
 
 # Add message label inside the message frame.
 message_label = customtkinter.CTkLabel(message_frame, text="")
+default_text_color = message_label.cget("text_color")
 message_label.pack(expand=True, fill="both")
 
 # Add a frame at the bottom of the application window.
@@ -163,6 +181,11 @@ mode_switch.pack(side="left")
 folder_var = tkinter.StringVar()
 folder_button = customtkinter.CTkButton(bottom_frame, width=200, text="DESTINATION  FOLDER", command=browse_folder)
 folder_button.pack(side="right")
+
+
+# Set default download folder path and display it in the message label.
+folder_var.set(get_default_download_path())
+message_label.configure(text=folder_var.get(), text_color=default_text_color)
 
 # Start the application's main loop.
 app.mainloop()
