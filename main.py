@@ -20,6 +20,39 @@ else:
     print("Running on Linux or Windows: SSL verification is enabled.")
 
 
+def get_video_infos(event=None):
+        """
+        Gets and displays video information from the provided YouTube URL.
+    
+        Args:
+            event: optional; the event that triggered the function call.
+        """
+        try:
+            video_url = url_entry.get()
+            yt_object = pytube.YouTube(video_url)
+
+            title_label.configure(text=f"Title: {yt_object.title}")
+            author_label.configure(text=f"Author: {yt_object.author}")
+
+            # Calculate and display the duration in minutes and seconds.
+            duration_minutes = yt_object.length // 60
+            duration_seconds = yt_object.length % 60
+            duration_label.configure(text=f"Duration: {duration_minutes:02d}:{duration_seconds:02d}")
+
+            # Format and display the publish date.
+            publish_date = yt_object.publish_date.strftime('%Y/%m/%d')
+            publish_date_label.configure(text=f"Publish date: {publish_date}")
+
+            views_label.configure(text=f"Views: {yt_object.views}")
+        except Exception as e:
+            title_label.configure(text="Title: none")
+            author_label.configure(text="Author: none")
+            duration_label.configure(text="Duration: none")
+            publish_date_label.configure(text="Publish date: none")
+            views_label.configure(text="Views: none")
+            print(e)
+
+
 def on_format_change(choice):
     """
     Enables or disables the quality menu based on the selected file format.
@@ -119,9 +152,26 @@ def on_progress(stream, chunk, bytes_remaining):
     progress_bar.set(float(percentage_of_completion) / 100)
 
 
+def reset_infos(event=None):
+    """
+    Resets the displayed video information to default values.
+
+    Args:
+        event: optional; the event that triggered the function call.
+    """
+    title_label.configure(text="Title: ")
+    author_label.configure(text="Author: ")
+    duration_label.configure(text="Duration: ")
+    publish_date_label.configure(text="Publish date: ")
+    views_label.configure(text="Views: ")
+
+
 def reset_progress(event=None):
     """
-    Resets the progress bar and percentage label to 0.
+    Resets the progress bar and percentage label to their default state.
+
+    Args:
+        event: optional; the event that triggered the function call.
     """
     progress_bar.set(0)
     percentage_label.configure(text="0%")
@@ -183,29 +233,47 @@ instructions.pack()
 
 # Add URL entry field.
 url_entry = customtkinter.CTkEntry(app, width=600, height=35)
+url_entry.bind("<KeyRelease>", reset_infos)
 url_entry.bind("<KeyRelease>", reset_progress)
+url_entry.bind("<KeyRelease>", get_video_infos)
 url_entry.pack(padx=20, pady=0)
 
-# Add a frame at the middle of the application window.
-middle_frame = customtkinter.CTkFrame(app, fg_color=app.cget("fg_color"))
-middle_frame.pack(fill="x", padx=20, pady=20)
+# Add a frame to display video information.
+infos_frame = customtkinter.CTkFrame(app)
+infos_frame.pack(fill="x", padx=20, pady=(20,0))
 
-middle_frame.grid_columnconfigure(0, weight=0)
-middle_frame.grid_columnconfigure(1, weight=0)
-middle_frame.grid_columnconfigure(2, weight=1)
+title_label = customtkinter.CTkLabel(infos_frame, text="Title: ")
+title_label.grid(row=0, column=0, sticky="w", padx=5)
 
-# Add file format menu to the middle frame.
-file_format_menu = customtkinter.CTkOptionMenu(middle_frame, width=150, values=["MP3", "MP4"], command=on_format_change)
+author_label = customtkinter.CTkLabel(infos_frame, text="Author: ")
+author_label.grid(row=1, column=0, sticky="w", padx=5)
+
+duration_label = customtkinter.CTkLabel(infos_frame, text="Duration: ")
+duration_label.grid(row=2, column =0, sticky="w", padx=5)
+
+publish_date_label = customtkinter.CTkLabel(infos_frame, text="Publish date: ")
+publish_date_label.grid(row=3, column =0, sticky="w", padx=5)
+
+views_label = customtkinter.CTkLabel(infos_frame, text="Views: ")
+views_label.grid(row=4, column =0, sticky="w", padx=5)
+
+# Add a frame for download options.
+options_frame = customtkinter.CTkFrame(app, fg_color=app.cget("fg_color"))
+options_frame.pack(fill="x", padx=20, pady=20)
+
+options_frame.grid_columnconfigure(0, weight=0)
+options_frame.grid_columnconfigure(1, weight=0)
+options_frame.grid_columnconfigure(2, weight=1)
+
+file_format_menu = customtkinter.CTkOptionMenu(options_frame, width=150, values=["MP3", "MP4"], command=on_format_change)
 file_format_menu.set("MP4")
 file_format_menu.grid(row=0, column=0, sticky="nsew", padx=(0, 20))
 
-# Add quality menu to the middle frame.
-quality_menu = customtkinter.CTkOptionMenu(middle_frame, width=150, values=["Highest", "1080p", "720p", "480p", "360p", "240p", "144p"])
+quality_menu = customtkinter.CTkOptionMenu(options_frame, width=150, values=["Highest", "1080p", "720p", "480p", "360p", "240p", "144p"])
 quality_menu.set("Highest")
 quality_menu.grid(row=0, column=1, sticky="nsew")
 
-# Add download button inside the middle frame.
-download_button = customtkinter.CTkButton(middle_frame, width=200, text="DOWNLOAD", cursor="hand2", command=download)
+download_button = customtkinter.CTkButton(options_frame, width=200, text="DOWNLOAD", cursor="hand2", command=download)
 download_button.grid(row=0, column=2, sticky="e")
 
 # Add progress bar.
@@ -217,25 +285,22 @@ progress_bar.pack()
 percentage_label = customtkinter.CTkLabel(app, text="0%")
 percentage_label.pack()
 
-# Add message frame for displaying status messages.
+# Add a frame for displaying status messages.
 message_frame = customtkinter.CTkFrame(app, width=600, height=35)
 message_frame.pack_propagate(False)
 message_frame.pack(fill="x", padx=20, pady=(0, 20))
 
-# Add message label inside the message frame.
 message_label = customtkinter.CTkLabel(message_frame, text="")
 default_text_color = message_label.cget("text_color")
 message_label.pack(expand=True, fill="both")
 
-# Add a frame at the bottom of the application window.
+# Add a bottom frame for mode switch and folder selection.
 bottom_frame = customtkinter.CTkFrame(app, fg_color=app.cget("fg_color"))
 bottom_frame.pack(fill="x", padx=20, pady=(0, 20))
 
-# Add mode switch for toggling between light and dark mode.
 mode_switch = customtkinter.CTkSwitch(bottom_frame, text="Dark mode", command=change_mode)
 mode_switch.pack(side="left")
 
-# Add button to select destination folder.
 folder_var = tkinter.StringVar()
 folder_button = customtkinter.CTkButton(bottom_frame, width=200, text="DESTINATION  FOLDER", command=browse_folder)
 folder_button.pack(side="right")
