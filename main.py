@@ -21,36 +21,36 @@ else:
 
 
 def get_video_infos(event=None):
-        """
-        Gets and displays video information from the provided YouTube URL.
-    
-        Args:
-            event: optional; the event that triggered the function call.
-        """
-        try:
-            video_url = url_entry.get()
-            yt_object = pytube.YouTube(video_url)
+    """
+    Gets and displays video information from the provided YouTube URL.
 
-            title_label.configure(text=f"Title: {yt_object.title}")
-            author_label.configure(text=f"Author: {yt_object.author}")
+    Args:
+        event: optional; the event that triggered the function call.
+    """
+    try:
+        video_url = url_entry.get()
+        yt_object = pytube.YouTube(video_url)
 
-            # Calculate and display the duration in minutes and seconds.
-            duration_minutes = yt_object.length // 60
-            duration_seconds = yt_object.length % 60
-            duration_label.configure(text=f"Duration: {duration_minutes:02d}:{duration_seconds:02d}")
+        title_label.configure(text=f"Title: {yt_object.title}")
+        author_label.configure(text=f"Author: {yt_object.author}")
 
-            # Format and display the publish date.
-            publish_date = yt_object.publish_date.strftime('%Y/%m/%d')
-            publish_date_label.configure(text=f"Publish date: {publish_date}")
+        # Calculate and display the duration in minutes and seconds.
+        duration_minutes = yt_object.length // 60
+        duration_seconds = yt_object.length % 60
+        duration_label.configure(text=f"Duration: {duration_minutes:02d}:{duration_seconds:02d}")
 
-            views_label.configure(text=f"Views: {yt_object.views}")
-        except Exception as e:
-            title_label.configure(text="Title: none")
-            author_label.configure(text="Author: none")
-            duration_label.configure(text="Duration: none")
-            publish_date_label.configure(text="Publish date: none")
-            views_label.configure(text="Views: none")
-            print(e)
+        # Format and display the publish date.
+        publish_date = yt_object.publish_date.strftime('%Y/%m/%d')
+        publish_date_label.configure(text=f"Publish date: {publish_date}")
+
+        views_label.configure(text=f"Views: {yt_object.views}")
+    except Exception as e:
+        title_label.configure(text="Title: none")
+        author_label.configure(text="Author: none")
+        duration_label.configure(text="Duration: none")
+        publish_date_label.configure(text="Publish date: none")
+        views_label.configure(text="Views: none")
+        print(e)
 
 
 def on_format_change(choice):
@@ -199,7 +199,7 @@ def get_default_download_path():
     elif platform.system() == "Darwin":
         return os.path.join(os.path.expanduser("~"), "Downloads")
     else:
-        print("ERROR")
+        print("The operating system is Linux, and there is no default Downloads folder.")
 
 
 def browse_folder():
@@ -219,11 +219,25 @@ customtkinter.set_default_color_theme("blue")
 # Create the main application window.
 app = customtkinter.CTk()
 app.resizable(False, False)
-app.iconbitmap("./yt_downloader_icon.ico")
+
+# Set the base directory for the application.
+base_dir = os.path.dirname(__file__)
+
+# Set the application icon based on the operating system.
+if platform.system() == "Windows":
+    app.iconbitmap(os.path.join(base_dir, "yt_downloader_icon.ico"))
+else:
+    icon = tkinter.PhotoImage(file=os.path.join(base_dir, "yt_downloader_icon.png"))
+    app.iconphoto(False, icon)
+
+# Set the application window title.
 app.title("YT Downloader")
 
 # Add the logo to the application window.
-logo = customtkinter.CTkImage(light_image=PIL.Image.open("yt_downloader_logo_light.png"), dark_image=PIL.Image.open("yt_downloader_logo_dark.png"), size=(250, 25))
+light_logo_path = os.path.join(base_dir, "yt_downloader_logo_light.png")
+dark_logo_path = os.path.join(base_dir, "yt_downloader_logo_dark.png")
+
+logo = customtkinter.CTkImage(light_image=PIL.Image.open(light_logo_path), dark_image=PIL.Image.open(dark_logo_path), size=(250, 25))
 logo_label = customtkinter.CTkLabel(app, image=logo, text="")
 logo_label.pack(padx=0, pady=20)
 
@@ -240,7 +254,7 @@ url_entry.pack(padx=20, pady=0)
 
 # Add a frame to display video information.
 infos_frame = customtkinter.CTkFrame(app)
-infos_frame.pack(fill="x", padx=20, pady=(20,0))
+infos_frame.pack(fill="x", padx=20, pady=(20, 0))
 
 title_label = customtkinter.CTkLabel(infos_frame, text="Title: ")
 title_label.grid(row=0, column=0, sticky="w", padx=5)
@@ -249,13 +263,13 @@ author_label = customtkinter.CTkLabel(infos_frame, text="Author: ")
 author_label.grid(row=1, column=0, sticky="w", padx=5)
 
 duration_label = customtkinter.CTkLabel(infos_frame, text="Duration: ")
-duration_label.grid(row=2, column =0, sticky="w", padx=5)
+duration_label.grid(row=2, column=0, sticky="w", padx=5)
 
 publish_date_label = customtkinter.CTkLabel(infos_frame, text="Publish date: ")
-publish_date_label.grid(row=3, column =0, sticky="w", padx=5)
+publish_date_label.grid(row=3, column=0, sticky="w", padx=5)
 
 views_label = customtkinter.CTkLabel(infos_frame, text="Views: ")
-views_label.grid(row=4, column =0, sticky="w", padx=5)
+views_label.grid(row=4, column=0, sticky="w", padx=5)
 
 # Add a frame for download options.
 options_frame = customtkinter.CTkFrame(app, fg_color=app.cget("fg_color"))
