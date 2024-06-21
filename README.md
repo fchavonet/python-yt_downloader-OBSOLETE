@@ -68,12 +68,12 @@ pip install -r requirements.txt
 
 4. Run the application:
 
-On Windows:
+*On Windows:*
 ```
 python main.py
 ```
 
-On Linux or MacOS:
+*On Linux or MacOS:*
 ```
 python3 main.py
 ```
