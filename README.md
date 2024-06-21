@@ -70,7 +70,11 @@ python main.py
 ```
 
 <p align="center">
-<img src="./resources/images/screenshots_light.png">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/fchavonet/python-yt_downloader/main/resources/images/screenshots_light.png">
+        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/fchavonet/python-yt_downloader/main/resources/images/screenshots_dark.png">
+        <img src="https://raw.githubusercontent.com/fchavonet/python-yt_downloader/main/resources/images/screenshots_light.png" alt="GitHub profil banner">
+    </picture>
 </p>
 
 ## 🔧 <span id="whats-next">What's next ?</span>
