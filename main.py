@@ -225,17 +225,17 @@ base_dir = os.path.dirname(__file__)
 
 # Set the application icon based on the operating system.
 if platform.system() == "Windows":
-    app.iconbitmap(os.path.join(base_dir, "yt_downloader_icon.ico"))
+    app.iconbitmap(os.path.join(base_dir, "resources/images/yt_downloader_icon.ico"))
 else:
-    icon = tkinter.PhotoImage(file=os.path.join(base_dir, "yt_downloader_icon.png"))
+    icon = tkinter.PhotoImage(file=os.path.join(base_dir, "resources/images/yt_downloader_icon.png"))
     app.iconphoto(False, icon)
 
 # Set the application window title.
 app.title("YT Downloader")
 
 # Add the logo to the application window.
-light_logo_path = os.path.join(base_dir, "yt_downloader_logo_light.png")
-dark_logo_path = os.path.join(base_dir, "yt_downloader_logo_dark.png")
+light_logo_path = os.path.join(base_dir, "resources/images/yt_downloader_logo_light.png")
+dark_logo_path = os.path.join(base_dir, "resources/images/yt_downloader_logo_dark.png")
 
 logo = customtkinter.CTkImage(light_image=PIL.Image.open(light_logo_path), dark_image=PIL.Image.open(dark_logo_path), size=(250, 25))
 logo_label = customtkinter.CTkLabel(app, image=logo, text="")

@@ -1,4 +1,4 @@
-# Python - YT Downloader <img height="50px" align="right" src="https://raw.githubusercontent.com/fchavonet/python-learning_exercises/main/resources/images/logo-python.png" alt="Python logo.">
+# Python - YT Downloader <img height="50px" align="right" src="./resources/images/logo-python.png" alt="Python logo.">
 
 ## 🔖 Table of contents
 
@@ -39,15 +39,12 @@ Initially, I created a smaller, non-GUI Python program within this <a target="_b
 
 <div align="center">
 
-| FILE                           | DESCRIPTION                                   |
-| :----------------------------: | :-------------------------------------------: |
-| `README.md`                    | The readme file you are currently reading ;). |
-| `main.py`                      | The main Python script for the YT Downloader. |
-| `requirements.txt`             | List of Python dependencies for the project.  |
-| `yt_downloader_icon.ico`       | The application icon for Windows.             |
-| `yt_downloader_icon.png`       | The application icon for other platforms.     |
-| `yt_downloader_logo_dark.png`  | The dark mode logo for the application.       |
-| `yt_downloader_logo_light.png` | The light mode logo for the application.      |
+| FILE                           | DESCRIPTION                                         |
+| :----------------------------: | :-------------------------------------------------: |
+| `resources`                    | Contains the resources required for the repository. |
+| `README.md`                    | The readme file you are currently reading ;).       |
+| `main.py`                      | The main Python script for the YT Downloader.       |
+| `requirements.txt`             | List of Python dependencies for the project.        |
 
 </div>
 
@@ -71,6 +68,10 @@ pip install -r requirements.txt
 ```
 python main.py
 ```
+
+<p align="center">
+<img src="./resources/images/screenshots_light.png">
+</p>
 
 ## 🔧 <span id="whats-next">What's next ?</span>
 
