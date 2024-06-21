@@ -55,18 +55,27 @@ Initially, I created a smaller, non-GUI Python program within this <a target="_b
     - Navigate to the directory where you want to clone the repository.
     - Run the following command:
 ```
-https://github.com/fchavonet/python-yt_downloader.git
+git clone https://github.com/fchavonet/python-yt_downloader.git
 ```
 
-2. Install the required packages:
+2. Open the repository you've just cloned.
+
+3. Install the required packages:
     - Ensure you have pip installed, then run:
 ```
 pip install -r requirements.txt
 ```
 
-3. Run the application:
+4. Run the application:
+
+On Windows:
 ```
 python main.py
+```
+
+On Linux or MacOS:
+```
+python3 main.py
 ```
 
 <p align="center">
