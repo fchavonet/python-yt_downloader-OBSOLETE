@@ -283,7 +283,7 @@ def fetch_info_worker(video_url):
     Fetch video metadata in a worker thread.
     """
     try:
-        ui_set_message("Fetching video info...")
+        ui_set_message("Fetching video informations...")
         ui_enable_download_button(False)
 
         ydl_opts = build_common_ydl_opts()
@@ -308,7 +308,7 @@ def fetch_info_worker(video_url):
             views_str = f"Views: {views}"
 
         ui_set_info_labels(title_str, author_str, duration_str, pubdate_str, views_str)
-        ui_set_message("Video info loaded!", color="green")
+        ui_set_message("Video informations loaded!", color="green")
         ui_enable_download_button(True)
 
     except SystemExit:
@@ -507,20 +507,20 @@ base_dir = os.path.dirname(__file__)
 
 # Set the application icon based on the operating system.
 if platform.system() == "Windows":
-    ico_path = os.path.join(base_dir, "resources/images/yt_downloader_icon.ico")
+    ico_path = os.path.join(base_dir, "assets/yt_downloader_icon.ico")
 
     if os.path.exists(ico_path):
         app.iconbitmap(ico_path)
 else:
-    png_icon_path = os.path.join(base_dir, "resources/images/yt_downloader_icon.png")
+    png_icon_path = os.path.join(base_dir, "assets/images/yt_downloader_icon.png")
 
     if os.path.exists(png_icon_path):
         icon = tkinter.PhotoImage(file=png_icon_path)
         app.iconphoto(False, icon)
 
 # Add the logo to the application window.
-light_logo_path = os.path.join(base_dir, "resources/images/yt_downloader_logo_light.png")
-dark_logo_path = os.path.join(base_dir, "resources/images/yt_downloader_logo_dark.png")
+light_logo_path = os.path.join(base_dir, "assets/images/yt_downloader_logo_light.png")
+dark_logo_path = os.path.join(base_dir, "assets/images/yt_downloader_logo_dark.png")
 
 if os.path.exists(light_logo_path) and os.path.exists(dark_logo_path):
     logo_img = customtkinter.CTkImage(light_image=Image.open(light_logo_path), dark_image=Image.open(dark_logo_path), size=(250, 25))
