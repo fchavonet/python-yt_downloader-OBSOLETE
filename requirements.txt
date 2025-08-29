@@ -1,3 +1,4 @@
+certifi
 customtkinter
 pillow
-pytube
+yt_dlp
